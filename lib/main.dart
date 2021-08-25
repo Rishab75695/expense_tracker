@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import './widgets/new_transaction.dart';
 import './widgets/transaction_list.dart';
+import './widgets/chart.dart';
 
 import './models/transaction.dart';
 
@@ -11,13 +12,28 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter App',
+      title: 'Expense Tracker',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Quicksand',
-        primarySwatch: Colors.lightGreen,
-        accentColor: Colors.green,
-      ),
+          fontFamily: 'Quicksand',
+          textTheme: ThemeData.light().textTheme.copyWith(
+                headline6: TextStyle(
+                  fontFamily: 'Opensans',
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+          primarySwatch: Colors.lightGreen,
+          accentColor: Colors.green,
+          appBarTheme: AppBarTheme(
+            textTheme: ThemeData.light().textTheme.copyWith(
+                  headline6: TextStyle(
+                    fontFamily: 'OpenSans',
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+          )),
       home: MyHomePage(),
     );
   }
@@ -30,20 +46,25 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final List<Transaction> _userTransactions = [
-    Transaction(
-      id: '1',
-      title: 'New Gpu',
-      amount: 420.69,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '2',
-      title: 'New Processor',
-      amount: 400.00,
-      date: DateTime.now(),
-    ),
+    // Transaction(
+    //   id: '1',
+    //   title: 'New Gpu',
+    //   amount: 420.69,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '2',
+    //   title: 'New Processor',
+    //   amount: 400.00,
+    //   date: DateTime.now(),
+    // ),
   ];
 
+  List<Transaction> get _recentTransactions{
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(Duration(days: 7),),);
+    }).toList();
+  }
   void _addNewTransaction(String txTitle, double txAmount) {
     final newTx = Transaction(
       title: txTitle,
@@ -87,14 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
             // mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Container(
-                width: double.infinity,
-                child: Card(
-                  color: Colors.lightGreen,
-                  child: Text('CHART!!'),
-                  elevation: 7,
-                ),
-              ),
+              Chart(_recentTransactions),
               TransactionList(_userTransactions),
             ]),
       ),
